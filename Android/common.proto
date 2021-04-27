@@ -1,0 +1,394 @@
+// Copyright (c) 2019, Moticon ReGo AG
+// All rights reserved.
+// 
+// Any redistribution in source or binary forms, with or without modification,
+// is not permitted.
+// 
+// THIS SOFTWARE IS PROVIDED BY MOTICON REGO AG "AS IS" AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL MOTICON REGO AG OR CONTRIBUTORS BE LIABLE FOR
+// ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+syntax = "proto2";
+package moticon_insole3.proto;
+
+
+enum ErrorCode {
+    SUCCESS = 0;
+    WRONG_SERVICE_REQUEST_TIME = 1;
+    WRONG_SERVICE_COUNTER = 2;
+    WRONG_SERIAL_NUMBER = 3;
+    SERVICE_TYPE_BUSY = 4;
+    PARAM_NOT_SUPPORTED = 5;
+    PARAM_MISMATCH = 6;
+    ACTIVITY_MISMATCH = 7;
+    NO_CONFIGURATION = 8;
+    NO_COORDINATES = 9;
+    NO_CALIBRATION = 10;
+    NO_TIMESYNC = 11;
+    WRONG_STATE = 12;
+    NO_RESOURCES = 13;
+    MEM_FULL = 14;
+    REC_TIMEOUT = 15;
+}
+
+message Error {
+    optional ErrorCode error_code = 1;
+    optional string message = 2;
+}
+
+
+enum Side {
+    LEFT = 0;
+    RIGHT = 1;
+    PAIR = 2;
+}
+
+
+enum CloseMode {
+    STOP = 0;
+    PAUSE = 1;
+    CANCEL = 2;
+}
+
+
+enum ZeroingSource {
+    KEEP = 0;
+    MANUAL = 1;
+    CALIBRATION_ZERO = 2;
+    UPLOAD = 3;
+}
+
+
+enum ZeroingMode {
+    OFF = 0;
+    AUTO = 1;
+    STILL = 2;
+}
+
+
+enum InsoleInfoType {
+    ALL = 0;
+    STATUS = 1;
+    STATE = 2;
+    INFO = 3;
+    GEOMETRY = 4;
+    CALIBRATION = 5;
+}
+
+
+enum ServiceType {
+    UNDEFINED = 0;
+    LIVE = 1;
+    RECORD = 2;
+}
+
+
+message Version {
+    optional uint32 major = 1;
+    optional uint32 minor = 2;
+    optional uint32 bugfix = 3;
+}
+
+
+message FwUpdateReq {
+    optional uint32 delay = 1;
+}
+
+
+message ServiceId {
+    optional uint32 left_serial_number = 1;
+    optional uint32 right_serial_number = 2;
+    optional uint32 service_counter = 3;
+}
+
+
+message ServiceConfig {
+    optional uint64 service_start_time = 1;
+    optional ServiceId service_id = 2;
+    optional ServiceType service_type = 3;
+    optional uint32 buffer_length = 4;
+
+    enum AccGRange {
+        ACC_2_G = 0;
+        ACC_4_G = 1;
+        ACC_8_G = 2;
+        ACC_16_G = 3;
+    }
+
+    enum AccOdr {
+        ACC_1_6_ODR = 0;
+        ACC_12_5_ODR = 1;
+        ACC_26_ODR = 2;
+        ACC_52_ODR = 3;
+        ACC_104_ODR = 4;
+        ACC_208_ODR = 5;
+        ACC_416_ODR = 6;
+        ACC_833_ODR = 7;
+        ACC_1666_ODR = 8;
+        ACC_3332_ODR = 9;
+        ACC_6664_ODR = 10;
+    }
+
+    enum AngDpsRange {
+        ANG_125_DPS = 0;
+        ANG_250_DPS = 1;
+        ANG_500_DPS = 2;
+        ANG_1000_DPS = 3;
+        ANG_2000_DPS = 4;
+    }
+
+    enum AngOdr {
+        ANG_12_5_ODR = 0;
+        ANG_26_ODR = 1;
+        ANG_52_ODR = 2;
+        ANG_104_ODR = 3;
+        ANG_208_ODR = 4;
+        ANG_416_ODR = 5;
+        ANG_833_ODR = 6;
+        ANG_1666_ODR = 7;
+        ANG_3332_ODR = 8;
+        ANG_6664_ODR = 9;
+    }
+
+    optional uint32 rate = 5;
+    repeated bool enabled_pressure = 6 [packed = true];
+    repeated bool enabled_acceleration = 7 [packed = true];
+    optional AccGRange acc_g_range = 8;
+    optional AccOdr acc_odr = 9;
+    repeated bool enabled_angular = 10 [packed = true];
+    optional AngDpsRange ang_dps_range = 11;
+    optional AngOdr ang_odr = 12;
+    optional bool enabled_temperature = 13;
+    optional bool enabled_total_force = 14;
+    repeated bool enabled_cop = 15 [packed = true];
+    optional bool enabled_feedback = 16;
+    repeated bool enabled_pressure_adc = 17 [packed = true];
+    repeated bool enabled_debug = 18 [packed = true];
+
+
+    enum ActivityProfile {
+        ACTIVITY_PROFILE_CONTINUOUS = 0;
+        ACTIVITY_PROFILE_ACCELERATION = 1;
+        ACTIVITY_PROFILE_TOTAL_FORCE = 2;
+        ACTIVITY_PROFILE_ACCELERATION_TOTAL_FORCE = 3;
+    }
+
+    enum ActivitySensitivity {
+        ACTIVITY_SENSITIVITY_INSENSITIVE = 0;
+        ACTIVITY_SENSITIVITY_MODERATE = 1;
+        ACTIVITY_SENSITIVITY_SENSITIVE = 2;
+    }
+
+    optional ActivityProfile activity_profile = 19;
+    optional uint32 activity_timeout = 20; 
+    optional ActivitySensitivity activity_sensitivity = 22;
+
+    optional uint32 rec_timeout = 21; 
+}
+
+message InsoleStatus {
+    optional uint32 memory_usage = 1;
+    optional uint32 battery_level = 2;
+    optional uint32 restart_counter = 3;
+    optional uint64 sys_clock = 4;
+    optional bool erase_progress = 5; 
+}
+
+
+message InsoleState {
+    optional uint64 operating_time_meter = 1;
+    optional uint64 measuring_time_meter = 2;
+
+    optional uint32 restart_counter = 3;
+    optional uint64 sys_clock = 4;
+
+    optional uint64 error_flags = 5;
+    optional uint32 memory_error = 6;
+    optional uint64 defect_sensors = 7;
+    optional uint64 weak_sensors = 8;
+
+    optional uint32 next_service_counter = 9;
+
+    optional float body_weight_external = 10;
+    optional float body_weight = 11;
+}
+
+
+message InsoleSettings {
+    optional uint32 serial_number = 1;
+
+    optional uint32 size = 2;
+    optional Side side = 3;
+    optional uint32 product_line = 4;
+    optional uint32 hw_type = 5;
+    optional uint32 hw_shape = 6;
+    optional uint32 sensor_type = 7;
+    optional uint32 num_sensors = 8;
+
+    optional uint64 capabilities = 9;
+    optional uint64 max_rec_time = 10;
+
+    optional bytes mpu_hash = 11;
+    optional Version mpu_version = 12;
+    optional bool mpu_modified = 13;
+    optional bytes ppu_hash = 14;
+    optional Version ppu_version = 15;
+    optional bool ppu_modified = 16;
+    optional uint32 sd_version = 17;
+    optional uint32 bootloader_version = 18;
+    optional uint32 hw_version = 19;
+    optional Version sensor_version = 20;
+    optional Version electronic_version = 21;
+
+    optional uint32 memory_size = 22;
+    optional uint32 memory_type = 23;
+
+    optional uint32 sleep_timeout = 24;
+    optional bool partner_sync_active = 25;
+
+    optional uint32 temperature_offset = 26;
+    optional Zeroing zeroing = 27;
+    optional uint32 fw_version_code = 28;
+}
+
+
+message SensorCoordinates {
+    repeated float x = 1 [packed = true];
+    repeated float y = 2 [packed = true];
+    repeated float area = 3 [packed = true];
+    repeated float area_factor = 4 [packed = true];
+}
+
+
+message CoordinatesData {
+    optional SensorCoordinates sensor_coordinates = 1;
+}
+
+
+message CoordinatesDataConf {
+    optional Error error = 1;
+}
+
+
+message Zeroing {
+    optional ZeroingSource source = 1;
+    optional ZeroingMode mode = 2;
+    repeated uint32 zero_vals = 3 [packed = true];
+    optional Side side = 4;
+}
+
+
+message ZeroingConf {
+    optional Error error = 1;
+    optional Side side = 2;
+}
+
+
+message EndpointSettings {
+    optional string ip_address = 1;
+    optional uint32 port = 2;
+}
+
+
+message ServiceEndpoint {
+    enum EndpointType {
+        UNDEFINED = 0;
+        APP = 1;
+        SERVICE = 2;
+        PC = 3;
+        CLOUD = 4;
+    }
+
+    optional EndpointType endpoint_type = 1;
+    optional EndpointSettings endpoint_settings = 2;
+    optional uint32 service_counter = 3;
+}
+
+
+message InsoleStartServiceConf {
+    optional Error error = 1;
+    optional uint32 service_counter = 2;
+}
+
+
+message MeasurementInfo {
+    optional uint64 start_time = 1;
+    optional string name = 2;
+    repeated string tag = 3;
+    optional string comment = 4;
+}
+
+message DataMessage {
+    optional ServiceId service_id = 1;
+    optional uint64 time = 2;
+    optional Side side = 3;
+
+    repeated uint32 pressure = 4 [packed = true];      // in 1/4 N/cm2
+    repeated float acceleration = 5 [packed = true];   // in g
+    repeated float angular = 6 [packed = true];        // in degree/s
+    optional float temperature = 7;
+    optional uint32 total_force = 8;                   // in N
+    repeated float cop = 9 [packed = true];            // in percent of insole length/width
+    optional int32 feedback = 10;
+    repeated uint32 pressure_adc = 11 [packed = true];
+    repeated uint32 debug = 12 [packed = true];
+}
+
+message EventMessage {
+    optional ServiceId service_id = 1;
+    optional uint64 time = 2;
+    optional Side side = 3;
+    optional uint32 event_value = 4;
+    optional string event_label = 5;
+}
+
+message Activity {
+    enum ActivityEvent {
+        ACTIVITY_PAUSE = 0;
+        ACTIVITY_RESUME = 1;
+        ACTIVITY_RESTART = 2;
+    }
+
+    optional ServiceId service_id = 1;
+    optional uint64 time = 2;
+    optional Side side = 3;
+    optional ActivityEvent event = 4;
+}
+
+message TimestampConf {
+    optional uint32 seq_num = 1;
+    optional uint64 time_tx = 2;
+    optional uint64 time_rx = 3;
+    optional uint64 time_conf_tx = 4;
+}
+
+message InsoleRecDelete {
+    optional Side side = 1;
+    optional uint32 service_counter = 2;
+    optional bool force_erase = 3;
+}
+
+message InsoleRecDeleteConf {
+    optional Side side = 1;
+    optional uint32 service_counter = 2;
+    optional Error error = 3;
+}
+
+
+
+message RecState {
+    optional uint32 packet_count = 1;
+    optional bool stopped = 2;
+}
+
+message EnterBootloader {
+    optional Side side = 1;
+}

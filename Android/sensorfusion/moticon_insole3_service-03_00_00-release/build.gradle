@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('moticon_insole3_service-03_00_00-release.aar'))

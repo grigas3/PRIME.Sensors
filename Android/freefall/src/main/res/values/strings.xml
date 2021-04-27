@@ -1,0 +1,10 @@
+<!--
+  ~ Copyright 2015 MbientLab Inc. All rights reserved.
+  -->
+
+<resources>
+    <string name="app_name">FreeFall Detector</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+</resources>

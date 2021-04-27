@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015 MbientLab Inc. All rights reserved.
+  -->
+
+<resources>
+    <style name="AppTheme" parent="android:Theme.Material.Light">
+    </style>
+</resources>

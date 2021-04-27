@@ -1,0 +1,378 @@
+// Copyright (c) 2019, Moticon ReGo AG
+// All rights reserved.
+// 
+// Any redistribution in source or binary forms, with or without modification,
+// is not permitted.
+// 
+// THIS SOFTWARE IS PROVIDED BY MOTICON REGO AG "AS IS" AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL MOTICON REGO AG OR CONTRIBUTORS BE LIABLE FOR
+// ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+syntax = "proto2";
+
+package moticon_insole3.proto.service;
+import "moticon_insole3/proto/common.proto";
+
+
+message MoticonMessage {
+    oneof msg {
+        DataOpen data_open = 2;
+        DataOpenConf data_open_conf = 3;
+        DataClose data_close = 4;
+        DataCloseConf data_close_conf = 5;
+        DataFlush data_flush = 6;
+        DataFlushConf data_flush_conf = 7;
+        DataMessage data_message = 8;
+        EventMessage event_message = 9;
+        bytes reserved = 10;
+        InsoleConnectionStatus insole_connection_status = 11;
+        InsoleInfo insole_info = 12;
+        ServiceConfig service_config = 13;
+        RecMessage rec_message = 14;
+        MeasurementInfo measurement_info = 15;
+        TimestampConf timestamp_conf = 16;
+
+        StartInsoleScan start_insole_scan = 17;
+        StopInsoleScan stop_insole_scan = 18;
+        InsoleAdvertisement insole_advertisement = 19;
+
+        ConnectInsoles connect_insoles = 20;
+        DisconnectInsoles disconnect_insoles = 21;
+
+        CheckEndpoint check_endpoint = 22;
+        EndpointConnectionStatus endpoint_connection_status = 23;
+
+        Zeroing zeroing = 24;
+        ZeroingConf zeroing_conf = 25;
+
+        StatusInfoReq status_info_req = 26;
+        StatusInfo status_info = 27;
+
+        StartService start_service = 28;
+        StartServiceConf start_service_conf = 29;
+        StopService stop_service = 30;
+        StopServiceConf stop_service_conf = 31;
+
+        RecListReq rec_list_req = 32;
+        RecList rec_list = 33;
+        RecDelete rec_delete = 34;
+        RecDeleteConf rec_delete_conf = 35;
+        RecDownloadReq rec_download_req = 36;
+        RecData rec_data = 37;
+        RecDownloadCancel rec_download_cancel = 38;
+
+        Notification notification = 39;
+        InsoleStatusInfo insole_status_info = 40;
+        EnterBootloader enter_bootloader = 41;
+        StartDFU start_dfu = 42;
+        StopDFU stop_dfu = 43;
+        RecDownloadStatus rec_download_status = 44;
+        RecState rec_state = 45;
+        DFUEvent dfu_event = 46;
+        RecDeleteStatus rec_delete_status = 47;
+        Activity activity = 48;
+    }
+}
+
+message StartService {
+    optional ServiceConfig service_config = 1;
+    optional MeasurementInfo measurement_info = 2;
+    optional ServiceEndpoint service_endpoint = 3;
+}
+
+message StartServiceConf {
+    optional InsoleStartServiceConf left_start_service_conf = 1;
+    optional InsoleStartServiceConf right_start_service_conf = 2;
+    optional StatusInfo status_info = 3;
+    optional MeasurementInfo measurement_info = 4;
+}
+
+
+message StopService {
+    optional uint32 left_service_counter = 1;
+    optional uint32 right_service_counter = 2;
+}
+
+message StopServiceConf {
+    optional Error left_error = 1;
+    optional Error right_error = 2;
+    optional StatusInfo status_info = 3;
+}
+
+message ControllingDeviceInfo {
+    optional string background_service_name = 1;
+    repeated uint32 background_service_version = 2 [packed = true];
+    optional string app_name = 3;
+    repeated uint32 app_version = 4 [packed = true];
+}
+
+message DataOpen {
+    optional ServiceId service_id = 1;
+    optional bool resume = 2;
+    optional MeasurementInfo measurement_info = 3;
+    optional ServiceConfig config = 4;
+    optional InsoleSettings insole_settings_left = 5;
+    optional InsoleSettings insole_settings_right = 6;
+    optional PatientInfo patient_info = 7;
+    optional ControllingDeviceInfo controlling_device_info = 8;
+}
+
+message DataOpenConf {
+    optional ServiceId service_id = 1;
+    optional Error error = 2;
+}
+
+
+message DataClose {
+    optional ServiceId service_id = 1;
+    optional CloseMode close_mode = 2;
+}
+
+
+message DataCloseConf {
+    optional ServiceId service_id = 1;
+    optional Error error = 2;
+    optional CloseMode close_mode = 3;
+}
+
+message DataFlush {
+    optional ServiceId service_id = 1;
+}
+
+
+message DataFlushConf {
+    optional ServiceId service_id = 1;
+    optional Error error = 2;
+    optional uint32 num_data_left = 3;
+    optional uint32 num_data_right = 4;
+    optional uint32 max_time_left = 5;
+    optional uint32 max_time_right = 6;
+}
+
+message RecMessage {
+    optional MoticonMessage moticon_message = 1;
+    optional Side side = 2;
+    optional bool last_message = 3;
+}
+
+message PatientInfo {
+    enum Gender {
+        UNDEFINED = 0;
+        FEMALE = 1;
+        MALE = 2;
+        DIVERS = 3;
+    }
+
+    optional string patient_id = 1;
+    optional Gender gender = 2;
+    optional string first_name = 3;
+    optional string last_name = 4;
+    optional string middle_initial = 5;
+    optional uint32 day_of_birth = 6;
+    optional uint32 month_of_birth = 7;
+    optional uint32 year_of_birth = 8;
+    optional float body_height = 9;
+    optional float body_weight = 10;
+}
+
+
+message StartInsoleScan {
+    optional bool includeDFU = 1;
+}
+
+message StopInsoleScan {
+}
+
+message InsoleDevice {
+    optional string device_address = 1;
+    optional Side side = 2;
+    optional uint32 size = 3;
+    optional uint32 serial_number = 4;
+    optional bool dfu = 5;
+}
+
+message InsoleAdvertisement {
+    optional InsoleDevice insole = 1;
+    optional bool moving = 2;
+    optional int32 rssi = 3;
+}
+
+message ConnectInsoles {
+    repeated InsoleDevice insoles = 1;
+}
+
+message DisconnectInsoles {
+}
+
+message InsoleConnectionStatus {
+    enum Status {
+        DISCONNECTED = 0;
+        READY = 1;
+        CONNECTED = 2;
+        RECONNECTING = 3;
+        CONNECT_TIMEOUT = 4;
+        CONNECTING = 5;
+        DISCONNECTING = 6;
+    }
+
+    optional Side side = 1;
+    optional Status status = 2;
+}
+
+
+message CheckEndpoint {
+    optional EndpointSettings endpoint_settings = 1;
+}
+
+message EndpointConnectionStatus {
+    enum Status {
+        DISCONNECTED = 0;
+        CONNECTED = 1;
+        AVAILABLE = 2;
+        CONNECTION_ERROR = 3;
+    }
+
+    enum ErrorCode {
+        ENDPOINT_NOT_FOUND = 0;
+        ENDPOINT_LOGIN_ERROR = 1;
+        ENDPOINT_ABORT = 2;
+    }
+
+    optional Status status = 1;
+    optional ErrorCode error_code = 2;
+    optional string error_message = 3;
+}
+
+message StatusInfoReq {
+}
+
+message InsoleInfo {
+    optional InsoleInfoType type = 1;
+    optional InsoleStatus insole_status = 2;
+    optional InsoleState insole_state = 3;
+    optional InsoleSettings insole_settings = 4;
+    optional SensorCoordinates sensor_coordinates = 5;
+    optional Side side = 6; 
+}
+message InsoleStatusInfo {
+    optional Side side = 1;
+    optional InsoleInfo insole_info = 2;
+    repeated ServiceConfig service_configs = 3;
+    optional InsoleConnectionStatus insole_connection_status = 4;
+    repeated ServiceEndpoint service_endpoints = 5;
+}
+
+message StatusInfo {
+    optional EndpointConnectionStatus endpoint_connection_status = 1;
+    repeated InsoleStatusInfo insole_status_info = 2;
+    optional RecDownloadStatus rec_download_status = 3;
+    optional RecDeleteStatus rec_delete_status = 4;
+}
+
+message RecListReq {
+}
+
+
+message RecList {
+    repeated RecHeaderPair rec_header_pair = 1;
+}
+
+message RecHeaderPair {
+    optional RecHeader header_left = 1;
+    optional RecHeader header_right = 2;
+
+    optional bool on_insole_left = 3;
+    optional bool on_insole_right = 4;
+    optional bool on_controller_left = 5;
+    optional bool on_controller_right = 6;
+}
+
+
+message RecDownloadReq {
+    repeated RecHeaderPair rec_header_pair = 1;
+    optional ServiceEndpoint service_endpoint = 2;
+}
+
+message RecDownloadStatus {
+    optional bool downloading = 1;
+    optional uint32 progress_measurement = 2;
+    optional uint32 num_measurements = 3;
+    optional uint32 current_measurement = 4;
+}
+
+message RecData {
+    optional Side side = 1;
+    optional ServiceId service_id = 2;
+    optional int32 fpos = 3;
+    optional bytes data = 4;
+    optional bool last_data = 5;
+    optional RecHeader rec_header = 6;
+}
+
+message RecDownloadCancel {
+    optional Side side = 1;
+}
+
+message RecHeader {
+    optional ServiceConfig service_config = 2;
+    optional MeasurementInfo measurement_info = 3;
+    optional InsoleInfo insole_info = 4;
+    optional RecState rec_state = 5;
+}
+
+message RecDelete {
+    repeated InsoleRecDelete insole_rec_delete = 1;
+}
+
+message RecDeleteStatus {
+    optional bool deleting = 1;
+    optional uint32 num_measurements = 3;
+    optional uint32 current_measurement = 4;
+}
+
+message RecDeleteConf {
+    repeated InsoleRecDeleteConf insole_rec_delete_conf = 1;
+}
+
+message Notification {
+    enum NotificationType {
+        INFO = 0;
+        WARNING = 1;
+        ERROR = 2;
+    }
+    optional NotificationType notification_type = 1;
+    optional string message = 2;
+    optional int32 notification_code = 3;
+}
+
+message StartDFU {
+    optional string device_address = 1;
+    optional bool is_dfu_address = 2;
+}
+
+message StopDFU {
+}
+
+message DFUEvent {
+    enum EventType {
+        COMPLETED = 0;
+        PROGRESS = 1;
+        ERROR = 2;
+        ABORTED = 3;
+        NOTIFICATION = 4;
+        LATEST_VERSION = 5;
+        CONNECTING = 6;
+    };
+
+    optional EventType event_type = 1;
+    optional string message = 2;
+    optional int32 progress = 3;
+}
